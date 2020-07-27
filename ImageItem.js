@@ -49,7 +49,7 @@ class ImageItem extends Component {
 
     let videoMarker;
     if ( item.node.type.startsWith( "video" ) )
-      videoMarker = <Image style={styles.videoMarker} source={videoIcon} />;
+      videoMarker = <Image style={styles.videoMarker} source={videoIcon} accessibilityLabel="videoMarker" />;
 
     const marker = selectedMarker || (<Image
       style={[styles.marker, { width: 25, height: 25 }]}
