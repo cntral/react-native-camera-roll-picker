@@ -62,7 +62,7 @@ class ImageItem extends Component {
       <TouchableOpacity
         style={{ marginBottom: imageMargin, marginRight: imageMargin }}
         onPress={() => this.handleClick(image)}
-        accessibilityLabel="thumbnail"
+        accessibilityLabel={ item.node.type.startsWith( "video" ) ? "videoThumbnail" : "imageThumbnail" }
       >
         <Image
           source={{ uri: image.uri }}
