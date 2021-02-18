@@ -151,6 +151,8 @@ class CameraRollPicker extends Component {
       fetchParams.after = this.state.lastCursor;
     }
 
+    fetchParams.include = [ "playableDuration" ]; // Include playableDuration by default as this will remove thumbnails that don't exist. e.g. /storage/emulated/0/ddmsrec.mp4 from screen recording.
+
     CameraRoll.getPhotos(fetchParams)
       .then(data => this.appendImages(data), e => console.log(e));
   }
