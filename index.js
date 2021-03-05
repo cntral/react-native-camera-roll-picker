@@ -56,6 +56,7 @@ class CameraRollPicker extends Component {
 
     this.state = {
       images: [],
+      isMounting: true,
       selected: this.props.selected,
       lastCursor: null,
       initialLoading: true,
@@ -71,18 +72,22 @@ class CameraRollPicker extends Component {
     this.renderImage = this.renderImage.bind(this);
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     if (Platform.OS === "android" && !(await this.hasAndroidPermission())) {
       return;
     }
 
     this.fetch();
+
+    this.setState({ isMounting: false });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      selected: nextProps.selected,
-    });
+  componentDidUpdate(prevProps) {
+    if (JSON.stringify(prevProps.selected) !== JSON.stringify( this.props.selected)) { // Only update `this.state.selected` if `this.props.selected` changes. Without this `if`, it causes an infinite loop.
+      this.setState({
+        selected: this.props.selected,
+      });
+    }
   }
 
   // Ensure we have the correct permissions read external storage on Android (required for Android 10+).
@@ -235,6 +240,8 @@ class CameraRollPicker extends Component {
   }
 
   render() {
+    if (this.state.isMounting ) return null;
+
     const {
       initialNumToRender,
       imageMargin,

@@ -28,14 +28,21 @@ const styles = StyleSheet.create({
 });
 
 class ImageItem extends Component {
-  componentWillMount() {
+  state = {
+    imageSize: null,
+    isMounting: true
+  }
+
+  componentDidMount() {
     let { width } = Dimensions.get('window');
     const { imageMargin, imagesPerRow, containerWidth } = this.props;
 
     if (typeof containerWidth !== 'undefined') {
       width = containerWidth;
     }
-    this.imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
+    const imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
+
+    this.setState({ imageSize, isMounting: false });
   }
 
   handleClick(item) {
@@ -43,6 +50,8 @@ class ImageItem extends Component {
   }
 
   render() {
+    if ( this.state.isMounting ) return null;
+
     const {
       item, selected, selectedMarker, imageMargin,
     } = this.props;
@@ -66,7 +75,7 @@ class ImageItem extends Component {
       >
         <Image
           source={{ uri: image.uri }}
-          style={{ height: this.imageSize, width: this.imageSize }}
+          style={{ height: this.state.imageSize, width: this.state.imageSize }}
         />
         {videoMarker}
         {(selected) ? marker : null}
