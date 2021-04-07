@@ -159,7 +159,11 @@ class CameraRollPicker extends Component {
     fetchParams.include = [ "playableDuration" ]; // Include playableDuration by default as this will remove thumbnails that don't exist. e.g. /storage/emulated/0/ddmsrec.mp4 from screen recording.
 
     CameraRoll.getPhotos(fetchParams)
-      .then(data => this.appendImages(data), e => console.log(e));
+      .then(data => {
+        data.edges.sort((a, b) => b.node.timestamp - a.node.timestamp); // We have to sort the images by `timestamp` because `getPhotos` sometimes doesn't. See this issue: https://github.com/react-native-cameraroll/react-native-cameraroll/issues/45.
+        this.appendImages(data);
+      })
+      .catch(error => console.error(error));
   }
 
   selectImage(image) {
