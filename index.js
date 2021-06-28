@@ -94,7 +94,6 @@ class CameraRollPicker extends Component {
   // Pulled straight from cameraroll README.
   // See https://github.com/react-native-cameraroll/react-native-cameraroll#permissions.
   async hasAndroidPermission() {
-    console.log( "Hello there love!" );
     const permission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
 
     const hasPermission = await PermissionsAndroid.check(permission);
