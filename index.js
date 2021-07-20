@@ -214,6 +214,7 @@ class CameraRollPicker extends Component {
         imagesPerRow={imagesPerRow}
         containerWidth={containerWidth}
         onClick={this.selectImage}
+        showsFileName={this.props.showsFileNames}
       />
     );
   }
@@ -232,6 +233,7 @@ class CameraRollPicker extends Component {
       containerWidth={this.props.containerWidth}
       imageMargin={this.props.imageMargin}
       selectedMarker={this.props.selectedMarker}
+      showsFileNames={this.props.showsFileNames}
     />);
   }
 
@@ -315,6 +317,7 @@ CameraRollPicker.propTypes = {
   emptyText: PropTypes.string,
   emptyTextStyle: Text.propTypes.style,
   loader: PropTypes.node,
+  showsFileNames: PropTypes.bool,
 };
 
 CameraRollPicker.defaultProps = {
@@ -332,6 +335,7 @@ CameraRollPicker.defaultProps = {
     console.log(selectedImages);
   },
   emptyText: 'No photos.',
+  showsFileNames: false,
 };
 
 export default CameraRollPicker;

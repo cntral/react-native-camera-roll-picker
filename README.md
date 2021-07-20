@@ -47,6 +47,7 @@ import CameraRollPicker from 'react-native-camera-roll-picker';
 - `emptyText`: Text to display instead of a list when there are no photos found. (Default: 'No photos.')
 - `emptyTextStyle`: Styles to apply to the `emptyText`. (Default: `textAlign: 'center'`)
 - `loader`: Loader component node. (Default: `<ActivityIndicator />`)
+- `showsFileNames`: Boolean to show image/video file name at the top of each image. (Default: `false`)
 
 ## Run Example
 ```
