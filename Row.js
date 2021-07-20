@@ -40,6 +40,7 @@ class Row extends PureComponent {
         imagesPerRow={imagesPerRow}
         containerWidth={containerWidth}
         onClick={this.props.selectImage}
+        showsFileName={this.props.showsFileNames}
       />
     );
   }
@@ -64,6 +65,7 @@ Row.propTypes = {
   rowData: PropTypes.array.isRequired,
   isSelected: PropTypes.array.isRequired,
   selectImage: PropTypes.func.isRequired,
+  showsFileNames: PropTypes.bool.isRequired,
 };
 
 export default Row;
