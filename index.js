@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { TextPropTypes } from "deprecated-react-native-prop-types";
 import CameraRoll from "@react-native-community/cameraroll";
 import PropTypes from 'prop-types';
 import Row from './Row';
@@ -315,7 +316,7 @@ CameraRollPicker.propTypes = {
   selectedMarker: PropTypes.element,
   backgroundColor: PropTypes.string,
   emptyText: PropTypes.string,
-  emptyTextStyle: Text.propTypes.style,
+  emptyTextStyle: TextPropTypes.style,
   loader: PropTypes.node,
   showsFileNames: PropTypes.bool,
 };
