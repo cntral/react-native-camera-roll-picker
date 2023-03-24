@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { TextPropTypes } from "deprecated-react-native-prop-types";
-import CameraRoll from "@react-native-community/cameraroll";
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import PropTypes from 'prop-types';
 import Row from './Row';
 
