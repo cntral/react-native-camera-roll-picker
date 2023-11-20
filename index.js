@@ -56,8 +56,8 @@ class CameraRollPicker extends Component {
     super(props);
 
     this.state = {
+      hasAndroidPermission: false,
       images: [],
-      isMounting: true,
       selected: this.props.selected,
       lastCursor: null,
       initialLoading: true,
@@ -74,13 +74,14 @@ class CameraRollPicker extends Component {
   }
 
   async componentDidMount() {
-    if (Platform.OS === "android" && !(await this.hasAndroidPermission())) {
-      return;
+    if (Platform.OS === "android") {
+      const hasAndroidPermission = await this.hasAndroidPermission();
+      this.setState({hasAndroidPermission});
+
+      if (!hasAndroidPermission) return this.setState({initialLoading: false});
     }
 
     this.fetch();
-
-    this.setState({ isMounting: false });
   }
 
   componentDidUpdate(prevProps) {
@@ -95,15 +96,42 @@ class CameraRollPicker extends Component {
   // Pulled straight from cameraroll README.
   // See https://github.com/react-native-cameraroll/react-native-cameraroll#permissions.
   async hasAndroidPermission() {
-    const permission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+    const getCheckPermissionPromise = () => {
+      if (Platform.Version >= 33) {
+        return Promise.all([
+          PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES),
+          PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO),
+        ]).then(
+          ([hasReadMediaImagesPermission, hasReadMediaVideoPermission]) =>
+            hasReadMediaImagesPermission && hasReadMediaVideoPermission,
+        );
+      } else {
+        return PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+      }
+    };
 
-    const hasPermission = await PermissionsAndroid.check(permission);
+    const hasPermission = await getCheckPermissionPromise();
     if (hasPermission) {
       return true;
     }
+    const getRequestPermissionPromise = () => {
+      if (Platform.Version >= 33) {
+        return PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+        ]).then(
+          (statuses) =>
+            statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES] ===
+              PermissionsAndroid.RESULTS.GRANTED &&
+            statuses[PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO] ===
+              PermissionsAndroid.RESULTS.GRANTED,
+        );
+      } else {
+        return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((status) => status === PermissionsAndroid.RESULTS.GRANTED);
+      }
+    };
 
-    const status = await PermissionsAndroid.request(permission);
-    return status === 'granted';
+    return await getRequestPermissionPromise();
   }
 
   onEndReached() {
@@ -246,8 +274,6 @@ class CameraRollPicker extends Component {
   }
 
   render() {
-    if (this.state.isMounting ) return null;
-
     const {
       initialNumToRender,
       imageMargin,
@@ -255,15 +281,19 @@ class CameraRollPicker extends Component {
       emptyText,
       emptyTextStyle,
       loader,
+      missingPermissionText,
+      missingPermissionTextStyle
     } = this.props;
 
-    if (this.state.initialLoading) {
-      return (
-        <View style={[styles.loader, { backgroundColor }]}>
-          { loader || <ActivityIndicator /> }
-        </View>
-      );
-    }
+    if (this.state.initialLoading) return (
+      <View style={[styles.loader, { backgroundColor }]}>
+        { loader || <ActivityIndicator /> }
+      </View>
+    );
+
+    if (Platform.OS === 'android' && !this.state.hasAndroidPermission) return (
+      <Text style={[{ textAlign: 'center' }, missingPermissionTextStyle]}>{missingPermissionText}</Text>
+    );
 
     const flatListOrEmptyText = this.state.data.length > 0 ? (
       <FlatList
@@ -319,6 +349,8 @@ CameraRollPicker.propTypes = {
   emptyTextStyle: TextPropTypes.style,
   loader: PropTypes.node,
   showsFileNames: PropTypes.bool,
+  missingPermissionText: PropTypes.string,
+  missingPermissionTextStyle: TextPropTypes.style,
 };
 
 CameraRollPicker.defaultProps = {
@@ -337,6 +369,7 @@ CameraRollPicker.defaultProps = {
   },
   emptyText: 'No photos.',
   showsFileNames: false,
+  missingPermissionText: 'Missing "Photos and videos" permission. Please grant permission and try again.',
 };
 
 export default CameraRollPicker;
